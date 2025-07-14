@@ -4,17 +4,17 @@ public class KelasModel {
     private String nama;
     private String waktu;
     private boolean tersedia;
-    private String fotoUrl;
     private boolean dibooking;
 
-    public KelasModel() {}
+    public KelasModel() {
+        // diperlukan untuk Firestore
+    }
 
-    public KelasModel(String nama, String waktu, boolean tersedia, String fotoUrl) {
+    public KelasModel(String nama, String waktu, boolean tersedia, boolean dibooking) {
         this.nama = nama;
         this.waktu = waktu;
         this.tersedia = tersedia;
-        this.fotoUrl = fotoUrl;
-        this.dibooking = false;
+        this.dibooking = dibooking;
     }
 
     public String getNama() {
@@ -39,14 +39,6 @@ public class KelasModel {
 
     public void setTersedia(boolean tersedia) {
         this.tersedia = tersedia;
-    }
-
-    public String getFotoUrl() {
-        return fotoUrl;
-    }
-
-    public void setFotoUrl(String fotoUrl) {
-        this.fotoUrl = fotoUrl;
     }
 
     public boolean isDibooking() {

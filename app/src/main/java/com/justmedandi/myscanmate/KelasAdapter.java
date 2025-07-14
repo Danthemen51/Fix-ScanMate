@@ -3,13 +3,13 @@ package com.justmedandi.myscanmate;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -53,14 +53,21 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
         holder.status.setText(kelas.isTersedia() ? "Tersedia" : "Penuh");
         holder.status.setTextColor(kelas.isTersedia() ? 0xFF388E3C : 0xFFD32F2F);
 
-        // load foto kelas pakai Glide (kalau ada fotoUrl)
-        if (kelas.getFotoUrl() != null && !kelas.getFotoUrl().isEmpty()) {
-            Glide.with(holder.itemView.getContext())
-                    .load(kelas.getFotoUrl())
-                    .into(holder.foto);
-        } else {
-            holder.foto.setImageResource(R.drawable.ic_placeholder); // default image
-        }
+        holder.btnBooking.setEnabled(kelas.isTersedia() && !kelas.isDibooking());
+        holder.btnBooking.setOnClickListener(v -> {
+            kelas.setDibooking(true);
+            FirebaseFirestore.getInstance()
+                    .collection("kelas")
+                    .document(kelas.getNama())
+                    .update("dibooking", true)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(holder.itemView.getContext(), "Kelas berhasil dibooking", Toast.LENGTH_SHORT).show();
+                        holder.btnBooking.setEnabled(false);
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(holder.itemView.getContext(), "Gagal booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        });
     }
 
     @Override
@@ -70,14 +77,14 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
 
     public static class KelasViewHolder extends RecyclerView.ViewHolder {
         TextView nama, waktu, status;
-        ImageView foto;
+        Button btnBooking;
 
         public KelasViewHolder(@NonNull View itemView) {
             super(itemView);
             nama = itemView.findViewById(R.id.tvNamaKelas);
             waktu = itemView.findViewById(R.id.tvWaktuKelas);
             status = itemView.findViewById(R.id.tvStatusKelas);
-            foto = itemView.findViewById(R.id.imgKelas);
+            btnBooking = itemView.findViewById(R.id.btnBooking);
         }
     }
 }
