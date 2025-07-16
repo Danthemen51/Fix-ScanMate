@@ -1,10 +1,10 @@
 package com.justmedandi.myscanmate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.ImageView;
-import android.content.Intent;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,19 +19,25 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerKelas;
-    TextView tvGreeting;
+    TextView tvGreeting, tvRoleBadge;
     BottomNavigationView bottomNav;
+    String currentRole = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // sesuaikan dengan layout utama kamu
+        setContentView(R.layout.activity_main);
 
         recyclerKelas = findViewById(R.id.recyclerKelas);
         recyclerKelas.setLayoutManager(new LinearLayoutManager(this));
         recyclerKelas.setAdapter(new KelasAdapter());
 
         tvGreeting = findViewById(R.id.tvGreeting);
+        tvRoleBadge = findViewById(R.id.tvRoleBadge); // badge kecil di bawah nama
+
+        bottomNav = findViewById(R.id.bottomNav);
+
+        // Ambil data user dari Firestore
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String uid = user.getUid();
@@ -42,15 +48,26 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             String name = documentSnapshot.getString("name");
+                            currentRole = documentSnapshot.getString("role");
+
                             tvGreeting.setText("Halo👋\n" + name);
+                            tvRoleBadge.setText(currentRole);
+
+                            // Disable tombol delegasi kalau bukan ketua/wakil
+                            if (!currentRole.equalsIgnoreCase("Ketua") &&
+                                    !currentRole.equalsIgnoreCase("Wakil")) {
+                                bottomNav.getMenu().findItem(R.id.nav_delegasi).setEnabled(false);
+                                bottomNav.getMenu().findItem(R.id.nav_delegasi).setIcon(R.drawable.ic_delegasi_disabled);
+                            }
                         }
                     })
                     .addOnFailureListener(e -> {
                         tvGreeting.setText("Halo, User");
+                        tvRoleBadge.setText("-");
                     });
         }
 
-        bottomNav = findViewById(R.id.bottomNav);
+        // Navigasi Bottom
         bottomNav.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -64,12 +81,13 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(MainActivity.this, BookingActivity.class));
                     return true;
                 } else if (id == R.id.nav_delegasi) {
-                    startActivity(new Intent(MainActivity.this, DelegasiActivity.class));
+                    if (currentRole.equalsIgnoreCase("Ketua") || currentRole.equalsIgnoreCase("Wakil")) {
+                        startActivity(new Intent(MainActivity.this, DelegasiActivity.class));
+                    }
                     return true;
                 }
                 return false;
             }
         });
-
     }
 }

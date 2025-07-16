@@ -3,7 +3,6 @@ package com.justmedandi.myscanmate;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -12,7 +11,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Date;
 
 public class activity_login extends AppCompatActivity {
 
@@ -28,34 +32,29 @@ public class activity_login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        // Inisialisasi UI
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         loginButton = findViewById(R.id.loginButton);
         goToRegisterTextView = findViewById(R.id.goToRegisterTextView);
         eyeToggle = findViewById(R.id.eyeToggle);
 
-        // Toggle Show/Hide Password
+        // Toggle mata password
         eyeToggle.setOnClickListener(v -> {
             if (isPasswordVisible) {
-                // Sembunyikan password
                 passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 eyeToggle.setImageResource(R.drawable.ic_eye_closed);
                 isPasswordVisible = false;
             } else {
-                // Tampilkan password
                 passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                 eyeToggle.setImageResource(R.drawable.ic_eye_open);
                 isPasswordVisible = true;
             }
-            // Geser cursor ke akhir
             passwordEditText.setSelection(passwordEditText.getText().length());
         });
 
-        // Login button
+        // Tombol Login
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             String pass = passwordEditText.getText().toString().trim();
@@ -67,18 +66,51 @@ public class activity_login extends AppCompatActivity {
 
             mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(this, MainActivity.class));
-                    finish();
+                    // Cek status delegasi sebelum lanjut ke MainActivity
+                    checkDelegasiStatusAndContinue();
                 } else {
                     Toast.makeText(this, "Login gagal: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });
 
-        // Pergi ke halaman register
+        // Tombol ke Register
         goToRegisterTextView.setOnClickListener(v -> {
             startActivity(new Intent(this, activity_register.class));
         });
+    }
+
+    private void checkDelegasiStatusAndContinue() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        String uid = user.getUid();
+
+        FirebaseFirestore.getInstance().collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    Timestamp until = doc.getTimestamp("delegasi_until");
+                    String role = doc.getString("role");
+
+                    if (until != null && until.toDate().before(new Date()) && "delegasi".equals(role)) {
+                        FirebaseFirestore.getInstance().collection("users").document(uid)
+                                .update("role", "mahasiswa", "delegasi_to", null, "delegasi_until", null)
+                                .addOnSuccessListener(v -> {
+                                    Toast.makeText(this, "Delegasi kamu telah berakhir", Toast.LENGTH_SHORT).show();
+                                    goToMain();
+                                });
+                    } else {
+                        goToMain();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    goToMain(); // lanjut aja walau gagal cek
+                });
+    }
+
+    private void goToMain() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 }

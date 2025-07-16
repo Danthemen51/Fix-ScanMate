@@ -1,26 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="24dp"
     android:background="#D6EFE9">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delegasi"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#006D5B" />
-
-    <TextView
+        android:id="@+id/tvDelegasiInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fitur ini menampilkan data ketua/wakil kelas dan informasi delegasi mahasiswa."
+        android:text="Memuat role kamu..."
         android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        android:textColor="#444" />
+        android:textStyle="bold"
+        android:textColor="#006D5B"
+        android:layout_marginBottom="12dp" />
 
-    <!-- Kamu bisa tambahkan RecyclerView atau CardView untuk list delegasi di sini -->
+    <Spinner
+        android:id="@+id/spinnerMahasiswa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnDelegasikan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delegasikan"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#006D5B"
+        android:textColor="#FFFFFF" />
 </LinearLayout>
