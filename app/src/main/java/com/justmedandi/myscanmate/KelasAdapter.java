@@ -1,9 +1,12 @@
 package com.justmedandi.myscanmate;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,8 +22,10 @@ import java.util.List;
 public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHolder> {
 
     private List<KelasModel> listKelas = new ArrayList<>();
+    private Context context;
 
     public KelasAdapter() {
+        this.context = context;
         loadDataFromFirestore();
     }
 
@@ -50,9 +55,28 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
         KelasModel kelas = listKelas.get(position);
         holder.nama.setText(kelas.getNama());
         holder.waktu.setText(kelas.getWaktu());
-        holder.status.setText(kelas.isTersedia() ? "Tersedia" : "Penuh");
-        holder.status.setTextColor(kelas.isTersedia() ? 0xFF388E3C : 0xFFD32F2F);
 
+        // Status
+        if (kelas.isTersedia()) {
+            holder.status.setText("Tersedia");
+            holder.status.setTextColor(Color.WHITE);
+            holder.status.setBackgroundResource(R.drawable.bg_status_tersedia);
+        } else {
+            holder.status.setText("Penuh");
+            holder.status.setTextColor(Color.WHITE);
+            holder.status.setBackgroundResource(R.drawable.bg_status_penuh);
+        }
+
+        // Gambar huruf gedung berdasarkan nama ruang
+        if (kelas.getNama().startsWith("A")) {
+            holder.imgGedung.setImageResource(R.drawable.ic_a1);
+        } else if (kelas.getNama().startsWith("B")) {
+            holder.imgGedung.setImageResource(R.drawable.ic_b1_tes);
+        } else {
+            holder.imgGedung.setImageResource(R.drawable.utb); // optional fallback
+        }
+
+        // Tombol Booking
         holder.btnBooking.setEnabled(kelas.isTersedia() && !kelas.isDibooking());
         holder.btnBooking.setOnClickListener(v -> {
             kelas.setDibooking(true);
@@ -78,6 +102,7 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
     public static class KelasViewHolder extends RecyclerView.ViewHolder {
         TextView nama, waktu, status;
         Button btnBooking;
+        ImageView imgGedung;
 
         public KelasViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -85,6 +110,7 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
             waktu = itemView.findViewById(R.id.tvWaktuKelas);
             status = itemView.findViewById(R.id.tvStatusKelas);
             btnBooking = itemView.findViewById(R.id.btnBooking);
+            imgGedung = itemView.findViewById(R.id.imgGedung);
         }
     }
 }
