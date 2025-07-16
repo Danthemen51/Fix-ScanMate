@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">My ScanMate</string>
+
+    <string-array name="gender_options">
+        <item>Laki-laki</item>
+        <item>Perempuan</item>
+    </string-array>
+
+    <string-array name="role_options">
+        <item>Mahasiswa Biasa</item>
+        <item>Ketua</item>
+        <item>Wakil</item>
+    </string-array>
 </resources>

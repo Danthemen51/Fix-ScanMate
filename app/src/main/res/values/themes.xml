@@ -1,9 +1,6 @@
+<!-- themes.xml -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MyScanMate" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Theme.MyScanMate" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- tema kamu -->
     </style>
-
-    <style name="Theme.MyScanMate" parent="Base.Theme.MyScanMate" />
 </resources>

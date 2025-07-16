@@ -4,9 +4,10 @@
     <color name="black">#000000</color>
     <color name="forest_green">#3c6f3c</color>
     <color name="white">#FFFFFF</color>
-    <color name="qr_button_purple">#7B1FA2</color>
+    <color name="qr_button_purple">#5fb15f</color>
     <color name="main">#187bcd</color>
     <color name="second">#1167b1</color>
     <color name="grey">#e1e1e1</color>
     <color name="white2">#fffff0</color>
+    <color name="hijau">#006D5B</color>
 </resources>

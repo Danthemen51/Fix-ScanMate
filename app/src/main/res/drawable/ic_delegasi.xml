@@ -1,3 +1,4 @@
+<!-- res/drawable/ic_delegasi.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -5,5 +6,5 @@
     android:viewportHeight="24">
     <path
         android:fillColor="#000000"
-        android:pathData="M12,2a10,10 0 1,0 10,10A10,10 0 0,0 12,2Zm1,14.5v-5h3l-4,-4l-4,4h3v5Z" />
+        android:pathData="M12,12c2.21,0 4,-1.79 4,-4s-1.79,-4 -4,-4 -4,1.79 -4,4 1.79,4 4,4zM12,14c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4zM17,18l2,2l4,-4l-1.41,-1.41L19,17.17l-0.59,-0.59L17,18z"/>
 </vector>

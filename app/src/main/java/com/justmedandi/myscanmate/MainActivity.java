@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,8 +34,20 @@ public class MainActivity extends AppCompatActivity {
         tvGreeting = findViewById(R.id.tvGreeting);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            String email = user.getEmail();
-            tvGreeting.setText("Halo, " + email);
+            String uid = user.getUid();
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(uid)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String name = documentSnapshot.getString("name");
+                            tvGreeting.setText("Halo👋\n" + name);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        tvGreeting.setText("Halo, User");
+                    });
         }
 
         bottomNav = findViewById(R.id.bottomNav);
@@ -50,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_booking) {
                     startActivity(new Intent(MainActivity.this, BookingActivity.class));
                     return true;
-                } else if (id == R.id.nav_profil) {
-                    startActivity(new Intent(MainActivity.this, ProfilActivity.class));
+                } else if (id == R.id.nav_delegasi) {
+                    startActivity(new Intent(MainActivity.this, DelegasiActivity.class));
                     return true;
                 }
                 return false;

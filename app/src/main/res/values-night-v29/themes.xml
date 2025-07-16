@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MyScanMate" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Ganti warna utama agar seragam dengan mode terang -->
+        <item name="colorPrimary">#005B4F</item>
+        <item name="colorPrimaryVariant">#004439</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="android:statusBarColor">#005B4F</item>
+
+        <!-- Nonaktifkan dark mode otomatis jika tidak ingin support -->
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>
