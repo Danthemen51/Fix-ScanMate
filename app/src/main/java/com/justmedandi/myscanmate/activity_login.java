@@ -1,6 +1,7 @@
 package com.justmedandi.myscanmate;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
@@ -27,12 +28,15 @@ public class activity_login extends AppCompatActivity {
     FirebaseAuth mAuth;
     boolean isPasswordVisible = false;
 
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
 
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
@@ -66,7 +70,6 @@ public class activity_login extends AppCompatActivity {
 
             mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    // Cek status delegasi sebelum lanjut ke MainActivity
                     checkDelegasiStatusAndContinue();
                 } else {
                     Toast.makeText(this, "Login gagal: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -74,7 +77,6 @@ public class activity_login extends AppCompatActivity {
             });
         });
 
-        // Tombol ke Register
         goToRegisterTextView.setOnClickListener(v -> {
             startActivity(new Intent(this, activity_register.class));
         });
@@ -98,15 +100,36 @@ public class activity_login extends AppCompatActivity {
                                 .update("role", "mahasiswa", "delegasi_to", null, "delegasi_until", null)
                                 .addOnSuccessListener(v -> {
                                     Toast.makeText(this, "Delegasi kamu telah berakhir", Toast.LENGTH_SHORT).show();
+                                    simpanDataUserKeSharedPrefs(doc.getString("nama"), doc.getString("email"), "mahasiswa", doc.getString("gender"));
                                     goToMain();
                                 });
                     } else {
+                        // Simpan semua data penting ke SharedPreferences
+                        simpanDataUserKeSharedPrefs(
+                                doc.getString("nama"),
+                                doc.getString("email"),
+                                doc.getString("role"),
+                                doc.getString("gender")
+                        );
                         goToMain();
                     }
                 })
                 .addOnFailureListener(e -> {
                     goToMain(); // lanjut aja walau gagal cek
                 });
+    }
+
+    private void simpanDataUserKeSharedPrefs(String nama, String email, String role, String gender) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("uid", user.getUid());
+        editor.putString("nama", nama);
+        editor.putString("email", email);
+        editor.putString("role", role);
+        editor.putString("gender", gender);
+        editor.apply();
     }
 
     private void goToMain() {

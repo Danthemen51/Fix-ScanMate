@@ -14,7 +14,7 @@
         />
 
     <item
-        android:id="@+id/nav_booking"
+        android:id="@+id/nav_denah"
         android:icon="@drawable/ic_denah"
         android:title="Denah Kampus" />
 

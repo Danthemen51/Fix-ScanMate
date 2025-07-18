@@ -13,9 +13,11 @@
         android:theme="@style/Theme.MyScanMate"
         tools:targetApi="31">
         <activity
+            android:name=".DenahActivity"
+            android:exported="false" />
+        <activity
             android:name=".SplashActivity"
-            android:exported="true" >
-
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,9 +44,7 @@
             android:exported="false" />
         <activity
             android:name=".activity_login"
-            android:exported="false">
-
-        </activity>
+            android:exported="false"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="false" />

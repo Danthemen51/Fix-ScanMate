@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.app.AlertDialog;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,8 +34,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerKelas.setAdapter(new KelasAdapter());
 
         tvGreeting = findViewById(R.id.tvGreeting);
-        tvRoleBadge = findViewById(R.id.tvRoleBadge); // badge kecil di bawah nama
-
+        tvRoleBadge = findViewById(R.id.tvRoleBadge);
         bottomNav = findViewById(R.id.bottomNav);
 
         // Ambil data user dari Firestore
@@ -53,11 +53,11 @@ public class MainActivity extends AppCompatActivity {
                             tvGreeting.setText("Halo👋\n" + name);
                             tvRoleBadge.setText(currentRole);
 
-                            // Disable tombol delegasi kalau bukan ketua/wakil
+                            // Ganti ikon delegasi kalau bukan ketua/wakil
                             if (!currentRole.equalsIgnoreCase("Ketua") &&
                                     !currentRole.equalsIgnoreCase("Wakil")) {
-                                bottomNav.getMenu().findItem(R.id.nav_delegasi).setEnabled(false);
-                                bottomNav.getMenu().findItem(R.id.nav_delegasi).setIcon(R.drawable.ic_delegasi_disabled);
+                                bottomNav.getMenu().findItem(R.id.nav_delegasi)
+                                        .setIcon(R.drawable.ic_delegasi_disabled); // ikon abu/abu
                             }
                         }
                     })
@@ -77,15 +77,24 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_scan) {
                     startActivity(new Intent(MainActivity.this, ScanQRActivity.class));
                     return true;
-                } else if (id == R.id.nav_booking) {
-                    startActivity(new Intent(MainActivity.this, BookingActivity.class));
+                } else if (id == R.id.nav_denah) {
+                    startActivity(new Intent(MainActivity.this, DenahActivity.class));
                     return true;
                 } else if (id == R.id.nav_delegasi) {
-                    if (currentRole.equalsIgnoreCase("Ketua") || currentRole.equalsIgnoreCase("Wakil")) {
+                    if (currentRole.equalsIgnoreCase("Ketua") ||
+                            currentRole.equalsIgnoreCase("Wakil")) {
                         startActivity(new Intent(MainActivity.this, DelegasiActivity.class));
+                    } else {
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("Akses Ditolak 🔒")
+                                .setMessage("Maaf, hanya Ketua dan Wakil kelas yang dapat mengakses fitur Delegasi.")
+                                .setIcon(R.drawable.ic_warning) // ikon peringatan
+                                .setPositiveButton("OK", null)
+                                .show();
                     }
                     return true;
                 }
+
                 return false;
             }
         });

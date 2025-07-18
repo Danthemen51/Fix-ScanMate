@@ -21,11 +21,9 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         ImageView logo = findViewById(R.id.logoImage);
-        TextView appName = findViewById(R.id.appNameText);
 
         // Animasi masuk
         logo.animate().alpha(1f).translationY(0f).setDuration(1200).start();
-        appName.animate().alpha(1f).translationY(0f).setDuration(1400).setStartDelay(200).start();
 
         // Setelah delay, lanjut ke LoginActivity
         new Handler().postDelayed(() -> {
