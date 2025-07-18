@@ -2,6 +2,7 @@ package com.justmedandi.myscanmate;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +59,7 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
         holder.nama.setText(kelas.getNama());
         holder.waktu.setText(kelas.getWaktu());
 
-        // Status
+        // Status visual
         if (kelas.isTersedia()) {
             holder.status.setText("Tersedia");
             holder.status.setTextColor(Color.WHITE);
@@ -69,7 +70,7 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
             holder.status.setBackgroundResource(R.drawable.bg_status_penuh);
         }
 
-        // Gambar gedung berdasarkan awalan nama kelas
+        // Gambar gedung berdasarkan awalan nama
         if (kelas.getNama().startsWith("A")) {
             holder.imgGedung.setImageResource(R.drawable.ic_a1);
         } else if (kelas.getNama().startsWith("B")) {
@@ -78,10 +79,10 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
             holder.imgGedung.setImageResource(R.drawable.utb);
         }
 
-        // Booking Button
+        // Tombol Booking aktif hanya jika tersedia dan belum dibooking
         holder.btnBooking.setEnabled(kelas.isTersedia() && !kelas.isDibooking());
+
         holder.btnBooking.setOnClickListener(v -> {
-            // Ambil role user
             FirebaseFirestore.getInstance()
                     .collection("users")
                     .document(FirebaseAuth.getInstance().getUid())
@@ -91,21 +92,13 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
                             String role = documentSnapshot.getString("role");
 
                             if (role != null && (role.equalsIgnoreCase("ketua") || role.equalsIgnoreCase("wakil") || role.equalsIgnoreCase("delegasi"))) {
-                                // Role diizinkan booking
-                                kelas.setDibooking(true);
-                                FirebaseFirestore.getInstance()
-                                        .collection("kelas")
-                                        .document(kelas.getNama())
-                                        .update("dibooking", true)
-                                        .addOnSuccessListener(aVoid -> {
-                                            Toast.makeText(context, "Kelas berhasil dibooking", Toast.LENGTH_SHORT).show();
-                                            holder.btnBooking.setEnabled(false);
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(context, "Gagal booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        });
+                                // Buka BookingActivity
+                                Intent intent = new Intent(context, BookingActivity.class);
+                                intent.putExtra("kelas_id", kelas.getId());
+                                intent.putExtra("kelas_nama", kelas.getNama());
+                                context.startActivity(intent);
                             } else {
-                                // Role tidak diizinkan
+                                // Tidak diizinkan booking
                                 showDeniedPopup();
                             }
                         }
