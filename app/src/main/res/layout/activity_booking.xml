@@ -1,102 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:padding="16dp"
-    tools:context=".BookingActivity">
+    android:background="#D6EFE9">
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <!-- Judul -->
         <TextView
-            android:id="@+id/tvBookingTitle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Form Booking Kelas"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"/>
 
-        <!-- Nama Kelas -->
-        <EditText
-            android:id="@+id/etNamaKelas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nama Kelas"
-            android:inputType="textCapWords"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Tanggal Booking -->
         <EditText
             android:id="@+id/etTanggal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tanggal (dd-MM-yyyy)"
-            android:focusable="false"
-            android:clickable="true"
-            android:inputType="none"
-            android:background="@drawable/edittext_bg"
+            android:hint="Tanggal (YYYY-MM-DD)"
+            android:inputType="date"
+            android:drawableLeft="@android:drawable/ic_menu_my_calendar"
             android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:background="@android:drawable/editbox_background_normal"
+            android:textColorHint="#d0d0d0"
+            android:textColor="@color/black"/>
 
-        <!-- Jam Mulai -->
         <EditText
             android:id="@+id/etJamMulai"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Jam Mulai (HH:mm)"
-            android:focusable="false"
-            android:clickable="true"
-            android:inputType="none"
-            android:background="@drawable/edittext_bg"
+            android:inputType="time"
+            android:drawableLeft="@android:drawable/ic_lock_idle_alarm"
             android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="12dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:textColorHint="#d0d0d0"
+            android:textColor="@color/black"/>
 
-        <!-- Jam Selesai -->
         <EditText
             android:id="@+id/etJamSelesai"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Jam Selesai (HH:mm)"
-            android:focusable="false"
-            android:clickable="true"
-            android:inputType="none"
-            android:background="@drawable/edittext_bg"
+            android:inputType="time"
+            android:drawableLeft="@android:drawable/ic_lock_idle_alarm"
             android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="12dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:textColorHint="#d0d0d0"
+            android:textColor="@color/black"/>
 
-        <!-- Keterangan -->
         <EditText
-            android:id="@+id/etKeterangan"
+            android:id="@+id/etKeperluan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Keterangan Tambahan"
+            android:hint="Keperluan Booking"
             android:inputType="textMultiLine"
             android:minLines="3"
-            android:gravity="top|start"
-            android:background="@drawable/edittext_bg"
+            android:gravity="top"
             android:padding="12dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginTop="12dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:textColorHint="#d0d0d0"
+            android:textColor="@color/black"/>
 
-        <!-- Tombol Submit -->
         <Button
-            android:id="@+id/btnBooking"
+            android:id="@+id/btnKirim"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Booking Sekarang"
-            android:backgroundTint="@color/hijau"
-            android:textColor="@android:color/white"
-            android:padding="12dp"
-            android:textSize="16sp" />
-
+            android:text="Kirim Booking"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#2196F3"
+            android:textColor="#FFFFFF"
+            android:padding="12dp"/>
     </LinearLayout>
 </ScrollView>

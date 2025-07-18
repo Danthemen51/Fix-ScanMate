@@ -44,10 +44,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tersedia"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:layout_marginTop="4dp" />
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_status_tersedia"
+                android:padding="4dp"
+                android:layout_marginTop="4dp"
+                android:textSize="12sp"
+                android:visibility="visible"/>
 
             <Button
                 android:id="@+id/btnBooking"

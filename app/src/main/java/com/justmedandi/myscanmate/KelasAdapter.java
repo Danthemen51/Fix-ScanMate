@@ -2,7 +2,6 @@ package com.justmedandi.myscanmate;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,46 +9,37 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHolder> {
 
-    private List<KelasModel> listKelas = new ArrayList<>();
-    private Context context;
-
-    public KelasAdapter() {
-        loadDataFromFirestore();
+    public interface OnItemClickListener {
+        void onItemClick(KelasModel kelasModel);
     }
 
-    private void loadDataFromFirestore() {
-        FirebaseFirestore.getInstance()
-                .collection("kelas")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    listKelas.clear();
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        KelasModel kelas = doc.toObject(KelasModel.class);
-                        kelas.setId(doc.getId());
-                        listKelas.add(kelas);
-                    }
-                    notifyDataSetChanged();
-                });
+    private final List<KelasModel> listKelas;
+    private final Context context;
+    private final OnItemClickListener listener;
+
+    public KelasAdapter(Context context, List<KelasModel> listKelas, OnItemClickListener listener) {
+        this.context = context;
+        this.listKelas = listKelas;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public KelasViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.item_kelas, parent, false);
         return new KelasViewHolder(view);
     }
@@ -60,8 +50,11 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
         holder.nama.setText(kelas.getNama());
         holder.waktu.setText(kelas.getWaktu());
 
-        // Status visual
-        if (kelas.isTersedia()) {
+        boolean isToday = isToday(kelas.getTanggal());
+        boolean bisaDibooking = kelas.isTersedia() && !kelas.isBooked() && isToday;
+
+        // Status tampilan
+        if (bisaDibooking) {
             holder.status.setText("Tersedia");
             holder.status.setTextColor(Color.WHITE);
             holder.status.setBackgroundResource(R.drawable.bg_status_tersedia);
@@ -71,7 +64,7 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
             holder.status.setBackgroundResource(R.drawable.bg_status_penuh);
         }
 
-        // Gambar gedung berdasarkan awalan nama
+        // Gambar berdasarkan nama gedung
         if (kelas.getNama().startsWith("A")) {
             holder.imgGedung.setImageResource(R.drawable.ic_a1);
         } else if (kelas.getNama().startsWith("B")) {
@@ -80,8 +73,9 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
             holder.imgGedung.setImageResource(R.drawable.utb);
         }
 
-        // Tombol Booking aktif hanya jika tersedia dan belum dibooking
-        holder.btnBooking.setEnabled(kelas.isTersedia() && !kelas.isDibooking());
+        // Tombol aktif kalau bisa dibooking
+        holder.btnBooking.setEnabled(bisaDibooking);
+        holder.btnBooking.setAlpha(bisaDibooking ? 1.0f : 0.5f);
 
         holder.btnBooking.setOnClickListener(v -> {
             FirebaseFirestore.getInstance()
@@ -91,15 +85,14 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             String role = documentSnapshot.getString("role");
+                            if (role != null && (
+                                    role.equalsIgnoreCase("ketua") ||
+                                            role.equalsIgnoreCase("wakil") ||
+                                            role.equalsIgnoreCase("delegasi"))) {
 
-                            if (role != null && (role.equalsIgnoreCase("ketua") || role.equalsIgnoreCase("wakil") || role.equalsIgnoreCase("delegasi"))) {
-                                // Buka BookingActivity
-                                Intent intent = new Intent(context, BookingActivity.class);
-                                intent.putExtra("kelas_id", kelas.getId());
-                                intent.putExtra("kelas_nama", kelas.getNama());
-                                context.startActivity(intent);
+                                listener.onItemClick(kelas); // Callback ke BookingActivity
+
                             } else {
-                                // Tidak diizinkan booking
                                 showDeniedPopup();
                             }
                         }
@@ -133,5 +126,12 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
             btnBooking = itemView.findViewById(R.id.btnBooking);
             imgGedung = itemView.findViewById(R.id.imgGedung);
         }
+    }
+
+    // Helper: cek apakah tanggal = hari ini
+    private boolean isToday(String tanggal) {
+        if (tanggal == null) return false;
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        return today.equals(tanggal);
     }
 }

@@ -1,66 +1,83 @@
 package com.justmedandi.myscanmate;
 
 public class KelasModel {
-    private String id;         // ID dokumen Firestore
+    private String id;
     private String nama;
     private String waktu;
     private boolean tersedia;
-    private boolean dibooking;
+    private boolean booked;
+    private String tanggal;
+    private String bookedBy;
 
     public KelasModel() {
-        // Diperlukan untuk Firestore
+        // Wajib untuk Firebase
     }
 
-    public KelasModel(String id, String nama, String waktu, boolean tersedia, boolean dibooking) {
+    public KelasModel(String id, String nama, String waktu, boolean tersedia, boolean booked, String tanggal, String bookedBy) {
         this.id = id;
         this.nama = nama;
         this.waktu = waktu;
         this.tersedia = tersedia;
-        this.dibooking = dibooking;
+        this.booked = booked;
+        this.tanggal = tanggal;
+        this.bookedBy = bookedBy;
     }
 
-    // Getter dan Setter ID
+    // Getter
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    // Getter dan Setter Nama
     public String getNama() {
         return nama;
+    }
+
+    public String getWaktu() {
+        return waktu;
+    }
+
+    public boolean isTersedia() {
+        return tersedia;
+    }
+
+    public boolean isBooked() {
+        return booked;
+    }
+
+    public String getTanggal() {
+        return tanggal;
+    }
+
+    public String getBookedBy() {
+        return bookedBy;
+    }
+
+    // Setter
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setNama(String nama) {
         this.nama = nama;
     }
 
-    // Getter dan Setter Waktu
-    public String getWaktu() {
-        return waktu;
-    }
-
     public void setWaktu(String waktu) {
         this.waktu = waktu;
-    }
-
-    // Getter dan Setter Tersedia
-    public boolean isTersedia() {
-        return tersedia;
     }
 
     public void setTersedia(boolean tersedia) {
         this.tersedia = tersedia;
     }
 
-    // Getter dan Setter Dibooking
-    public boolean isDibooking() {
-        return dibooking;
+    public void setBooked(boolean booked) {
+        this.booked = booked;
     }
 
-    public void setDibooking(boolean dibooking) {
-        this.dibooking = dibooking;
+    public void setTanggal(String tanggal) {
+        this.tanggal = tanggal;
+    }
+
+    public void setBookedBy(String bookedBy) {
+        this.bookedBy = bookedBy;
     }
 }
