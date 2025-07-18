@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/rounded_white"
+    android:gravity="center">
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_error_x"
+        android:contentDescription="Denied" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Maaf, anda tidak bisa booking ruangan karena anda bukan ketua atau ketua kelas"
+        android:textSize="14sp"
+        android:layout_marginTop="16dp"
+        android:textColor="#333"
+        android:textAlignment="center" />
+</LinearLayout>

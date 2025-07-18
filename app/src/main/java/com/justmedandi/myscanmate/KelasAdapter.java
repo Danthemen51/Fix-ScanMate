@@ -1,5 +1,6 @@
 package com.justmedandi.myscanmate;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -25,7 +27,6 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
     private Context context;
 
     public KelasAdapter() {
-        this.context = context;
         loadDataFromFirestore();
     }
 
@@ -46,7 +47,8 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
     @NonNull
     @Override
     public KelasViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_kelas, parent, false);
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.item_kelas, parent, false);
         return new KelasViewHolder(view);
     }
 
@@ -67,31 +69,56 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
             holder.status.setBackgroundResource(R.drawable.bg_status_penuh);
         }
 
-        // Gambar huruf gedung berdasarkan nama ruang
+        // Gambar gedung berdasarkan awalan nama kelas
         if (kelas.getNama().startsWith("A")) {
             holder.imgGedung.setImageResource(R.drawable.ic_a1);
         } else if (kelas.getNama().startsWith("B")) {
             holder.imgGedung.setImageResource(R.drawable.ic_b1_tes);
         } else {
-            holder.imgGedung.setImageResource(R.drawable.utb); // optional fallback
+            holder.imgGedung.setImageResource(R.drawable.utb);
         }
 
-        // Tombol Booking
+        // Booking Button
         holder.btnBooking.setEnabled(kelas.isTersedia() && !kelas.isDibooking());
         holder.btnBooking.setOnClickListener(v -> {
-            kelas.setDibooking(true);
+            // Ambil role user
             FirebaseFirestore.getInstance()
-                    .collection("kelas")
-                    .document(kelas.getNama())
-                    .update("dibooking", true)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(holder.itemView.getContext(), "Kelas berhasil dibooking", Toast.LENGTH_SHORT).show();
-                        holder.btnBooking.setEnabled(false);
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(holder.itemView.getContext(), "Gagal booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    .collection("users")
+                    .document(FirebaseAuth.getInstance().getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String role = documentSnapshot.getString("role");
+
+                            if (role != null && (role.equalsIgnoreCase("ketua") || role.equalsIgnoreCase("wakil") || role.equalsIgnoreCase("delegasi"))) {
+                                // Role diizinkan booking
+                                kelas.setDibooking(true);
+                                FirebaseFirestore.getInstance()
+                                        .collection("kelas")
+                                        .document(kelas.getNama())
+                                        .update("dibooking", true)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Toast.makeText(context, "Kelas berhasil dibooking", Toast.LENGTH_SHORT).show();
+                                            holder.btnBooking.setEnabled(false);
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(context, "Gagal booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
+                            } else {
+                                // Role tidak diizinkan
+                                showDeniedPopup();
+                            }
+                        }
                     });
         });
+    }
+
+    private void showDeniedPopup() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_booking_denied, null);
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
