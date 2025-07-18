@@ -1,22 +1,34 @@
 package com.justmedandi.myscanmate;
 
 public class KelasModel {
+    private String id;         // ID dokumen Firestore
     private String nama;
     private String waktu;
     private boolean tersedia;
     private boolean dibooking;
 
     public KelasModel() {
-        // diperlukan untuk Firestore
+        // Diperlukan untuk Firestore
     }
 
-    public KelasModel(String nama, String waktu, boolean tersedia, boolean dibooking) {
+    public KelasModel(String id, String nama, String waktu, boolean tersedia, boolean dibooking) {
+        this.id = id;
         this.nama = nama;
         this.waktu = waktu;
         this.tersedia = tersedia;
         this.dibooking = dibooking;
     }
 
+    // Getter dan Setter ID
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    // Getter dan Setter Nama
     public String getNama() {
         return nama;
     }
@@ -25,6 +37,7 @@ public class KelasModel {
         this.nama = nama;
     }
 
+    // Getter dan Setter Waktu
     public String getWaktu() {
         return waktu;
     }
@@ -33,6 +46,7 @@ public class KelasModel {
         this.waktu = waktu;
     }
 
+    // Getter dan Setter Tersedia
     public boolean isTersedia() {
         return tersedia;
     }
@@ -41,6 +55,7 @@ public class KelasModel {
         this.tersedia = tersedia;
     }
 
+    // Getter dan Setter Dibooking
     public boolean isDibooking() {
         return dibooking;
     }

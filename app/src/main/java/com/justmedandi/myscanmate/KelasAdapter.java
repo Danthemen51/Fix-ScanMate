@@ -39,6 +39,7 @@ public class KelasAdapter extends RecyclerView.Adapter<KelasAdapter.KelasViewHol
                     listKelas.clear();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         KelasModel kelas = doc.toObject(KelasModel.class);
+                        kelas.setId(doc.getId());
                         listKelas.add(kelas);
                     }
                     notifyDataSetChanged();
