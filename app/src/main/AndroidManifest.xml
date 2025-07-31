@@ -13,6 +13,15 @@
         android:theme="@style/Theme.MyScanMate"
         tools:targetApi="31">
         <activity
+            android:name=".EditKelasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TambahKelasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminPanelActivity"
+            android:exported="false" />
+        <activity
             android:name=".DenahActivity"
             android:exported="false" />
         <activity
@@ -44,7 +53,7 @@
             android:exported="false" />
         <activity
             android:name=".activity_login"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />

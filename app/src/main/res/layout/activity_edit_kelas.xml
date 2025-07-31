@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <EditText
+        android:id="@+id/edtNamaKelas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nama Kelas" />
+
+    <EditText
+        android:id="@+id/edtWaktuKelas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Waktu (contoh: 10.00 - 12.00)" />
+
+    <EditText
+        android:id="@+id/edtTanggalKelas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tanggal (yyyy-MM-dd)" />
+
+    <Button
+        android:id="@+id/btnSimpanKelas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Simpan"
+        android:layout_marginTop="16dp" />
+</LinearLayout>

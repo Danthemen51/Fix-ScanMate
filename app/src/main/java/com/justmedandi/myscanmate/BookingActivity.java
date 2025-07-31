@@ -27,7 +27,7 @@ public class BookingActivity extends AppCompatActivity {
     FirebaseFirestore firestore;
     FirebaseUser user;
 
-    Calendar calendar = Calendar.getInstance(); // Untuk date/time picker
+    Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,53 +40,46 @@ public class BookingActivity extends AppCompatActivity {
         etKeperluan = findViewById(R.id.etKeperluan);
         btnKirim = findViewById(R.id.btnKirim);
 
-        // Ambil data dari Intent
+        // Ambil data kelas dari Intent
         kelasId = getIntent().getStringExtra("kelas_id");
         kelasNama = getIntent().getStringExtra("kelas_nama");
 
         firestore = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Tanggal Picker
+        // Pilih tanggal
         etTanggal.setOnClickListener(view -> {
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog datePickerDialog = new DatePickerDialog(BookingActivity.this,
-                    (view1, selectedYear, selectedMonth, selectedDay) -> {
-                        String tanggal = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
-                        etTanggal.setText(tanggal);
-                    }, year, month, day);
-            datePickerDialog.show();
+            DatePickerDialog datePicker = new DatePickerDialog(BookingActivity.this,
+                    (view1, y, m, d) -> etTanggal.setText(String.format("%02d/%02d/%04d", d, m + 1, y)),
+                    year, month, day);
+            datePicker.show();
         });
 
-        // Jam Mulai Picker
+        // Pilih jam mulai
         etJamMulai.setOnClickListener(view -> {
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minute = calendar.get(Calendar.MINUTE);
-
-            TimePickerDialog timePickerDialog = new TimePickerDialog(BookingActivity.this,
-                    (view1, hourOfDay, minute1) -> {
-                        String jam = String.format("%02d:%02d", hourOfDay, minute1);
-                        etJamMulai.setText(jam);
-                    }, hour, minute, true);
-            timePickerDialog.show();
+            TimePickerDialog timePicker = new TimePickerDialog(BookingActivity.this,
+                    (view1, h, m) -> etJamMulai.setText(String.format("%02d:%02d", h, m)),
+                    hour, minute, true);
+            timePicker.show();
         });
 
-        // Jam Selesai Picker
+        // Pilih jam selesai
         etJamSelesai.setOnClickListener(view -> {
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minute = calendar.get(Calendar.MINUTE);
-
-            TimePickerDialog timePickerDialog = new TimePickerDialog(BookingActivity.this,
-                    (view1, hourOfDay, minute1) -> {
-                        String jam = String.format("%02d:%02d", hourOfDay, minute1);
-                        etJamSelesai.setText(jam);
-                    }, hour, minute, true);
-            timePickerDialog.show();
+            TimePickerDialog timePicker = new TimePickerDialog(BookingActivity.this,
+                    (view1, h, m) -> etJamSelesai.setText(String.format("%02d:%02d", h, m)),
+                    hour, minute, true);
+            timePicker.show();
         });
 
+        // Kirim booking
         btnKirim.setOnClickListener(v -> kirimBooking());
     }
 
@@ -101,33 +94,50 @@ public class BookingActivity extends AppCompatActivity {
             return;
         }
 
-        Map<String, Object> bookingData = new HashMap<>();
-        bookingData.put("kelasId", kelasId);
-        bookingData.put("kelasNama", kelasNama);
-        bookingData.put("userId", user.getUid());
-        bookingData.put("tanggal", tanggal);
-        bookingData.put("jamMulai", jamMulai);
-        bookingData.put("jamSelesai", jamSelesai);
-        bookingData.put("keperluan", keperluan);
-        bookingData.put("timestamp", System.currentTimeMillis()); // opsional sorting nanti
+        String uid = user.getUid();
 
-        firestore.collection("bookings")
-                .add(bookingData)
-                .addOnSuccessListener(documentReference -> {
-                    // Update status kelas jadi tidak tersedia
-                    Map<String, Object> updateStatus = new HashMap<>();
-                    updateStatus.put("tersedia", false);
-                    updateStatus.put("dibooking", true);
+        // Ambil data pengguna (kelas yang booking)
+        firestore.collection("users").document(uid).get().addOnSuccessListener(userSnapshot -> {
+            if (userSnapshot.exists()) {
+                String kelasMahasiswa = userSnapshot.getString("kelas");
 
-                    firestore.collection("kelas")
-                            .document(kelasId)
-                            .update(updateStatus)
-                            .addOnSuccessListener(unused -> {
-                                Toast.makeText(this, "Berhasil booking dan ruangan ditandai penuh!", Toast.LENGTH_SHORT).show();
-                                finish(); // tutup activity setelah berhasil
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(this, "Booking berhasil tapi gagal update status kelas.", Toast.LENGTH_SHORT).show());
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, "Gagal booking: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                Map<String, Object> bookingData = new HashMap<>();
+                bookingData.put("kelasId", kelasId);
+                bookingData.put("kelasNama", kelasNama);
+                bookingData.put("userId", uid);
+                bookingData.put("tanggal", tanggal);
+                bookingData.put("jamMulai", jamMulai);
+                bookingData.put("jamSelesai", jamSelesai);
+                bookingData.put("keperluan", keperluan);
+                bookingData.put("timestamp", System.currentTimeMillis());
+
+                firestore.collection("bookings")
+                        .add(bookingData)
+                        .addOnSuccessListener(documentReference -> {
+                            // Update status kelas jadi penuh
+                            Map<String, Object> updateStatus = new HashMap<>();
+                            updateStatus.put("tersedia", false);
+                            updateStatus.put("dibooking", true);
+                            updateStatus.put("bookedby", kelasMahasiswa);
+                            updateStatus.put("tanggal", tanggal);
+                            updateStatus.put("jamMulai", jamMulai);
+                            updateStatus.put("jamSelesai", jamSelesai);
+
+                            firestore.collection("kelas")
+                                    .document(kelasId)
+                                    .update(updateStatus)
+                                    .addOnSuccessListener(unused -> {
+                                        Toast.makeText(this, "Booking berhasil dan kelas ditandai penuh!", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(this, "Booking berhasil, tapi update status gagal.", Toast.LENGTH_SHORT).show());
+                        })
+                        .addOnFailureListener(e -> Toast.makeText(this, "Gagal menyimpan data booking.", Toast.LENGTH_SHORT).show());
+            } else {
+                Toast.makeText(this, "Data pengguna tidak ditemukan.", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Gagal mengambil data pengguna.", Toast.LENGTH_SHORT).show();
+        });
     }
 }

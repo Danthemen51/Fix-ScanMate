@@ -62,8 +62,8 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="16dp">
 
-                <EditText
-                    android:id="@+id/searchBox"
+                <SearchView
+                    android:id="@+id/searchView"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -208,7 +208,24 @@
                 android:layout_marginTop="8dp"
                 />
         </LinearLayout>
+
+
     </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddKelas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="72dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="Tambah Kelas"
+        android:visibility="gone"
+        android:translationZ="8dp"
+        app:backgroundTint="@color/hijau"
+        app:tint="@android:color/white" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -221,5 +238,7 @@
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:labelVisibilityMode="labeled" />
+
+
 
 </RelativeLayout>

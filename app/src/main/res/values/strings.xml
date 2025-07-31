@@ -11,4 +11,15 @@
         <item>Ketua</item>
         <item>Wakil</item>
     </string-array>
+
+    <string-array name="gender_array">
+        <item>Laki-laki</item>
+        <item>Perempuan</item>
+    </string-array>
+
+    <string-array name="role_array">
+        <item>Ketua</item>
+        <item>Wakil</item>
+        <item>Mahasiswa Biasa</item>
+    </string-array>
 </resources>

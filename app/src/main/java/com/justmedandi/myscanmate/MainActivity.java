@@ -2,14 +2,20 @@ package com.justmedandi.myscanmate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.app.AlertDialog;
+import android.view.View;
+import android.widget.SearchView;
+import android.widget.Toast;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -18,6 +24,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,34 +32,77 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerKelas;
     private TextView tvGreeting, tvRoleBadge;
     private BottomNavigationView bottomNav;
+    private FloatingActionButton fabAddKelas;
 
     private FirebaseFirestore firestore;
     private FirebaseUser user;
 
-    private ArrayList<KelasModel> kelasList;
+    private ArrayList<KelasModel> kelasList = new ArrayList<>();
     private KelasAdapter adapter;
 
-    private String currentRole = "";
-    private String currentName = "";
+    private String currentRole = "-";
+    private String currentName = "User";
+    private ImageView imgProfile;
+    private SearchView searchView;
+    private ImageView btnFilter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        searchView = findViewById(R.id.searchView);
+        btnFilter = findViewById(R.id.btnFilter);
+
+// Tombol filter menjadi pemicu pencarian
+        btnFilter.setOnClickListener(v -> {
+            String query = searchView.getQuery().toString().trim();
+            if (!query.isEmpty()) {
+                filterKelas(query); // Fungsi untuk filter RecyclerView
+            } else {
+                filterKelas(""); // Jika kosong, tampilkan semua
+            }
+        });
+
+
         initViews();
         initFirebase();
-        setupRecyclerView();
         setupBottomNavigation();
         loadUserData();
-        loadKelasData();
     }
 
     private void initViews() {
         recyclerKelas = findViewById(R.id.recyclerKelas);
         tvGreeting = findViewById(R.id.tvGreeting);
         tvRoleBadge = findViewById(R.id.tvRoleBadge);
+        imgProfile = findViewById(R.id.imgProfile);
         bottomNav = findViewById(R.id.bottomNav);
+        fabAddKelas = findViewById(R.id.fabAddKelas);
+
+        fabAddKelas.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TambahKelasActivity.class);
+            startActivity(intent);
+        });
+
+        imgProfile.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, ProfilActivity.class);
+            startActivity(intent);
+        });
+
+        searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterKelas(newText);
+                return true;
+            }
+        });
     }
 
     private void initFirebase() {
@@ -60,13 +110,12 @@ public class MainActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    private void setupRecyclerView() {
-        kelasList = new ArrayList<>();
-        adapter = new KelasAdapter(this, kelasList, kelasModel -> {
-            if (currentRole.equalsIgnoreCase("Ketua") || currentRole.equalsIgnoreCase("Wakil")) {
+    private void setupRecyclerView(boolean isAdmin) {
+        adapter = new KelasAdapter(this, kelasList, isAdmin, kelas -> {
+            if ("Ketua".equalsIgnoreCase(currentRole) || "Wakil".equalsIgnoreCase(currentRole)) {
                 Intent intent = new Intent(MainActivity.this, BookingActivity.class);
-                intent.putExtra("kelas_id", kelasModel.getId());
-                intent.putExtra("kelas_nama", kelasModel.getNama());
+                intent.putExtra("kelas_id", kelas.getId());
+                intent.putExtra("kelas_nama", kelas.getNama());
                 startActivity(intent);
             } else {
                 showAlert("Akses Ditolak ❌", "Hanya Ketua atau Wakil yang dapat melakukan booking kelas.");
@@ -113,10 +162,19 @@ public class MainActivity extends AppCompatActivity {
                             tvGreeting.setText("Halo👋\n" + currentName);
                             tvRoleBadge.setText(currentRole);
 
-                            if (!currentRole.equalsIgnoreCase("Ketua") && !currentRole.equalsIgnoreCase("Wakil")) {
+                            if (!"Ketua".equalsIgnoreCase(currentRole) && !"Wakil".equalsIgnoreCase(currentRole)) {
                                 bottomNav.getMenu().findItem(R.id.nav_delegasi)
                                         .setIcon(R.drawable.ic_delegasi_disabled);
                             }
+
+                            if ("Admin".equalsIgnoreCase(currentRole)) {
+                                fabAddKelas.setVisibility(View.VISIBLE);
+                            } else {
+                                fabAddKelas.setVisibility(View.GONE);
+                            }
+
+                            setupRecyclerView("admin".equalsIgnoreCase(currentRole));
+                            loadKelasData();
                         } else {
                             showDefaultUserInfo();
                         }
@@ -131,6 +189,9 @@ public class MainActivity extends AppCompatActivity {
         tvGreeting.setText("Halo, User");
         tvRoleBadge.setText("-");
         currentRole = "-";
+        fabAddKelas.setVisibility(View.GONE);
+        setupRecyclerView(false);
+        loadKelasData();
     }
 
     private void loadKelasData() {
@@ -148,28 +209,26 @@ public class MainActivity extends AppCompatActivity {
                         kelas.setBookedBy(doc.getString("bookedBy") != null ? doc.getString("bookedBy") : "-");
                         kelas.setTanggal(doc.getString("tanggal") != null ? doc.getString("tanggal") : "-");
 
-                        // Reset kelas jika waktu sudah lewat
                         if (kelas.isBooked() && kelas.getTanggal() != null) {
                             try {
-                                String waktu = kelas.getWaktu().replace("–", "-"); // pastikan separatornya "-" biasa
+                                String waktu = kelas.getWaktu().replace("–", "-");
                                 String[] waktuSplit = waktu.split("-");
-                                String waktuSelesai = waktuSplit[1].trim(); // ex: "17:00"
+                                if (waktuSplit.length >= 2) {
+                                    String waktuSelesai = waktuSplit[1].trim();
+                                    String waktuSekarang = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                                    String tanggalSekarang = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                                    String tanggalBooking = kelas.getTanggal();
 
-                                String waktuSekarang = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-                                String tanggalSekarang = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                                String tanggalBooking = kelas.getTanggal();
-
-                                if (tanggalBooking.equals(tanggalSekarang)) {
-                                    if (waktuSekarang.compareTo(waktuSelesai) > 0) {
+                                    if (tanggalBooking.equals(tanggalSekarang)) {
+                                        if (waktuSekarang.compareTo(waktuSelesai) > 0) {
+                                            resetKelas(kelas);
+                                        }
+                                    } else {
                                         resetKelas(kelas);
                                     }
-                                } else {
-                                    // Hari sudah berganti
-                                    resetKelas(kelas);
                                 }
-
                             } catch (Exception e) {
-                                e.printStackTrace(); // debug kalau format jamnya error
+                                e.printStackTrace();
                             }
                         }
 
@@ -177,7 +236,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> showAlert("Gagal Memuat Data", "Tidak dapat mengambil data kelas dari server."));
+                .addOnFailureListener(e -> {
+                    kelasList.clear();
+                    adapter.notifyDataSetChanged();
+                    showAlert("Gagal Memuat Data", "Tidak dapat mengambil data kelas dari server.");
+                });
     }
 
     private void resetKelas(KelasModel kelas) {
@@ -191,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
                     kelas.setTersedia(true);
                     kelas.setBookedBy("");
                     kelas.setTanggal("");
-                    adapter.notifyDataSetChanged();
                 });
     }
 
@@ -207,6 +269,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadKelasData(); // Refresh saat kembali
+        loadKelasData();
     }
+
+    private void filterKelas(String text) {
+        List<KelasModel> filteredList = new ArrayList<>();
+        for (KelasModel item : kelasList) {
+            if (item.getNama().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+
+        if (filteredList.isEmpty()) {
+            Toast.makeText(this, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
+        }
+
+        adapter.updateList(filteredList);
+    }
+
+
 }

@@ -21,14 +21,44 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvNamaKelas"
-                android:layout_width="wrap_content"
+            <!-- Baris atas: Nama Kelas + tombol edit & hapus -->
+            <!-- Baris atas: Nama Kelas + tombol edit & hapus -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nama Kelas"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvNamaKelas"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Nama Kelas"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black" />
+
+                <ImageButton
+                    android:id="@+id/btnEdit"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_edit"
+                    android:contentDescription="Edit"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/btnDelete"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_delete"
+                    android:contentDescription="Hapus"
+                    android:visibility="gone" />
+            </LinearLayout>
+
 
             <TextView
                 android:id="@+id/tvWaktuKelas"
@@ -37,7 +67,7 @@
                 android:text="08.00 - 10.00"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/tvStatusKelas"
@@ -49,7 +79,17 @@
                 android:padding="4dp"
                 android:layout_marginTop="4dp"
                 android:textSize="12sp"
-                android:visibility="visible"/>
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvBookedBy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dibooking oleh: TIF RP 23I"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnBooking"
@@ -71,5 +111,4 @@
             android:scaleType="centerInside"
             android:src="@drawable/ic_a1" />
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>

@@ -7,20 +7,23 @@ public class KelasModel {
     private boolean tersedia;
     private boolean booked;
     private String tanggal;
-    private String bookedBy;
+    private String dibookingOleh;
+    private String namaKelas;
 
+    // Constructor kosong (wajib untuk Firebase)
     public KelasModel() {
-        // Wajib untuk Firebase
     }
 
-    public KelasModel(String id, String nama, String waktu, boolean tersedia, boolean booked, String tanggal, String bookedBy) {
+    // Constructor lengkap
+    public KelasModel(String id, String nama, String waktu, boolean tersedia, boolean booked, String tanggal, String bookedBy, String namaKelas) {
         this.id = id;
         this.nama = nama;
         this.waktu = waktu;
         this.tersedia = tersedia;
         this.booked = booked;
         this.tanggal = tanggal;
-        this.bookedBy = bookedBy;
+        this.dibookingOleh = bookedBy;
+        this.namaKelas = namaKelas;
     }
 
     // Getter
@@ -49,7 +52,7 @@ public class KelasModel {
     }
 
     public String getBookedBy() {
-        return bookedBy;
+        return dibookingOleh;
     }
 
     // Setter
@@ -73,11 +76,16 @@ public class KelasModel {
         this.booked = booked;
     }
 
+    public String getNamaKelas() {
+        return namaKelas; // atau sesuai field
+    }
+
+
     public void setTanggal(String tanggal) {
         this.tanggal = tanggal;
     }
 
     public void setBookedBy(String bookedBy) {
-        this.bookedBy = bookedBy;
+        this.dibookingOleh = bookedBy;
     }
 }
