@@ -102,6 +102,8 @@ cd scanmate-app
  > Mode offline cache
  > Web admin panel
 
+## User Interface
+![Alt Text](https://raw.githubusercontent.com/Danthemen51/assets/main/path/to/1.png)
 
 👨‍💻 Kontributor
 Kelompok TIF RP 23I - Universitas Teknologi Bandung
