@@ -102,8 +102,25 @@ cd scanmate-app
  > Mode offline cache
  > Web admin panel
 
-## User Interface
-![Alt Text](https://raw.githubusercontent.com/Danthemen51/assets/main/path/to/1.png)
+## 🔍 Tampilan Fitur ScanMate
+
+<table>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/11.png" width="170"/></td>
+    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/4.jpg" width="170"/></td>
+    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/10.jpg" width="170"/></td>
+      <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/2.jpg" width="170"/></td>
+      <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/3.jpg" width="170"/></td>
+  </tr>
+  <tr>
+    <td align="center">Scan QR</td>
+    <td align="center">Dahboard</td>
+    <td align="center">Booking</td>
+    <td align="center">Login</td>
+    <td align="center">Register</td>
+  </tr>
+</table>
+
 
 👨‍💻 Kontributor
 Kelompok TIF RP 23I - Universitas Teknologi Bandung
