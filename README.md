@@ -77,7 +77,22 @@ Fix-ScanMate/
 
 ## 📸 Preview Aplikasi
 
-> ✨ (Tambahkan screenshot aplikasi jika tersedia di folder `assets/`)
+<table>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/11.png" width="170"/></td>
+    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/4.jpg" width="170"/></td>
+    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/10.jpg" width="170"/></td>
+      <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/2.jpg" width="170"/></td>
+      <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/3.jpg" width="170"/></td>
+  </tr>
+  <tr>
+    <td align="center">Scan QR</td>
+    <td align="center">Dahboard</td>
+    <td align="center">Booking</td>
+    <td align="center">Login</td>
+    <td align="center">Register</td>
+  </tr>
+</table>
 
 ---
 
@@ -101,25 +116,6 @@ cd scanmate-app
  > Peta denah kampus interaktif
  > Mode offline cache
  > Web admin panel
-
-## 🔍 Tampilan Fitur ScanMate
-
-<table>
-  <tr>
-    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/11.png" width="170"/></td>
-    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/4.jpg" width="170"/></td>
-    <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/10.jpg" width="170"/></td>
-      <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/2.jpg" width="170"/></td>
-      <td><img src="https://raw.githubusercontent.com/Danthemen51/assets/main/3.jpg" width="170"/></td>
-  </tr>
-  <tr>
-    <td align="center">Scan QR</td>
-    <td align="center">Dahboard</td>
-    <td align="center">Booking</td>
-    <td align="center">Login</td>
-    <td align="center">Register</td>
-  </tr>
-</table>
 
 
 👨‍💻 Kontributor
